@@ -1,0 +1,727 @@
+{
+  "name": "Follow Up (7 days) Work Flow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        0
+      ],
+      "id": "bb7c0732-d645-44e4-9c15-e94319d9ad9d",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1SlLwSCv-ijWeYFuai6nlc-83lzYcunzJ5eefPcJ-WvE",
+          "mode": "list",
+          "cachedResultName": "Binox Leads Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SlLwSCv-ijWeYFuai6nlc-83lzYcunzJ5eefPcJ-WvE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 700142481,
+          "mode": "list",
+          "cachedResultName": "leads-100",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SlLwSCv-ijWeYFuai6nlc-83lzYcunzJ5eefPcJ-WvE/edit#gid=700142481"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        64,
+        0
+      ],
+      "id": "bce03da0-c103-48dc-8c22-5357ebaed38b",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bBpwW5WKU1sDaQ2j",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5dcc9542-58c4-40c0-90dd-ebce73f68972",
+              "leftValue": "={{ $json.follow_up_outreach }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "577918ac-6abf-4156-bb1c-e839b73039ee",
+              "leftValue": "={{ $json.reply_received }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "9343f596-cfe3-4cf5-af3e-d05c0eb44083",
+              "leftValue": "={{ $json.follow_up_date }}",
+              "rightValue": "= {{ $now.minus({days: 4}).toISO() }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "before"
+              }
+            },
+            {
+              "id": "c002ac7a-3535-40df-a36c-b0e4fbd9c07e",
+              "leftValue": "={{ $json.follow_up_outreach_2 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        272,
+        0
+      ],
+      "id": "9f133dc1-ea22-447d-a860-c7fc17716fcf",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a strategy agent deciding the follow-up angle for a 3rd touch cold email.\n\nAvailable angles: cost_savings | social_proof | curiosity_hook | case_study\n\nRules:\n- If follow_up_angle = social_proof → use curiosity_hook\n- If follow_up_angle = curiosity_hook → use case_study\n- Never reuse an angle that got no reply\n\nRespond in valid JSON only, no markdown:\n{\"angle\": \"curiosity_hook\", \"reason\": \"switching from social proof after no reply\"}",
+              "role": "model"
+            },
+            {
+              "content": "=Lead info:\n- Industry: {{ $json.industry }}\n- Role: {{ $json.role }}\n- Previous angle used: {{ $json.angle_used }}\n- Follow-up angle used: {{ $json.follow_up_angle }}\n- Reply received: {{ $json.reply_received }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        144
+      ],
+      "id": "464cdddc-20b7-489d-a3a7-f8d4a1d1856c",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "I2pwZMxJpr3EsJBu",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are Oscar Kwan, Head of Solutions at Binox Limited (oscar@binox.com.hk).\n\nThis is a 3rd and final touch. The recipient has not replied to two previous emails.\nKeep it to 2-3 sentences maximum. Make it feel like a genuine last check-in, not a chase.\nNo exclamation points. Peer-to-peer tone. No mention of previous emails.\n\nUse the angle provided. Switch completely from previous angles.\n\nAlways format your output exactly like this, no exceptions:\nDo not generate a subject line. Output the email body only.\n\n<email body>\n\n<closing regards and details>\n\nAngles defined:\n- cost_savings: Lead with 90-day ROI and $5M cost reduction stats\n- social_proof: Lead with a similar company success story\n- curiosity_hook: Open with a provocative question about their industry\n- case_study: Reference a specific logistics/retail/manufacturing win\n\nWrite from Oscar's perspective. No placeholders.",
+              "role": "model"
+            },
+            {
+              "content": "=Here is a lead's information:\nFirst Name: {{ $('Filter').item.json.first_name }}\nLast Name: {{ $('Filter').item.json.last_name }}\nCompany: {{ $('Filter').item.json.company }}\nWhat industry are they in: {{ $('Filter').item.json.industry }}\nWhat they currently do/notes: {{ $('Filter').item.json.notes }}\nPrevious outreach: {{ $('Filter').item.json.outreach }}\nAngle to use: {{ $json.angle }}\nReason: {{ $json.reason }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1056,
+        144
+      ],
+      "id": "0dc1916a-2538-45ae-b4f6-367d194b1041",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "I2pwZMxJpr3EsJBu",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const raw = $json.content.parts[0].text\nconst parsed = JSON.parse(raw);\nreturn { json: parsed };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        144
+      ],
+      "id": "e1525b1a-8f56-4bb9-a684-bd6c4738a54e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a42597d0-0a98-4291-bba2-9615ebfc820f",
+              "name": "message",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1440,
+        144
+      ],
+      "id": "aa8b14a2-a1b8-41e2-b1ae-8e86ab990f7e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1904,
+        16
+      ],
+      "id": "3782246e-a89f-474e-af9c-ebd5e55eb277",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1SlLwSCv-ijWeYFuai6nlc-83lzYcunzJ5eefPcJ-WvE",
+          "mode": "list",
+          "cachedResultName": "Binox Leads Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SlLwSCv-ijWeYFuai6nlc-83lzYcunzJ5eefPcJ-WvE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 700142481,
+          "mode": "list",
+          "cachedResultName": "leads-100",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SlLwSCv-ijWeYFuai6nlc-83lzYcunzJ5eefPcJ-WvE/edit#gid=700142481"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "first_name": "={{ $json.first_name }}",
+            "reply_received": "=false",
+            "sent": "=True",
+            "follow_up_2_angle": "={{ $('Code in JavaScript').item.json.angle }}",
+            "follow_up_outreach_2": "={{ $json.message }}",
+            "follow_up_2_date": "={{ $now.toISO() }}",
+            "chat_history": "={{ $json.history }}"
+          },
+          "matchingColumns": [
+            "first_name"
+          ],
+          "schema": [
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "industry",
+              "displayName": "industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "linkedin_url",
+              "displayName": "linkedin_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "outreach",
+              "displayName": "outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "date_sent",
+              "displayName": "date_sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "sent",
+              "displayName": "sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "angle_used",
+              "displayName": "angle_used",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "reply_received",
+              "displayName": "reply_received",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reply_date",
+              "displayName": "reply_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "follow_up_angle",
+              "displayName": "follow_up_angle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "follow_up_outreach",
+              "displayName": "follow_up_outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "follow_up_date",
+              "displayName": "follow_up_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "follow_up_2_angle",
+              "displayName": "follow_up_2_angle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "follow_up_outreach_2",
+              "displayName": "follow_up_outreach_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "follow_up_2_date",
+              "displayName": "follow_up_2_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "chat_history",
+              "displayName": "chat_history",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2320,
+        16
+      ],
+      "id": "58d38cfb-afc9-42c3-b0ba-19cae23fedf8",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bBpwW5WKU1sDaQ2j",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "oscar@binox.com.hk",
+        "toEmail": "={{ $('Get row(s) in sheet').item.json.email }}",
+        "subject": "=Re: {{ $('Get row(s) in sheet').item.json.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.follow_up_outreach_2 }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        2592,
+        16
+      ],
+      "id": "c2786976-ef89-4d02-8158-dd1add15b34e",
+      "name": "Send an Email",
+      "webhookId": "f9eabe7a-5ac7-4846-86a4-7dffb87611b7",
+      "credentials": {
+        "smtp": {
+          "id": "fx0hPYFKYj7C7pRx",
+          "name": "SMTP account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return { json: { ...($json), message: $json.message.trim() } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1648,
+        144
+      ],
+      "id": "24f5c0a7-2a22-4907-8436-59e0436c5687",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const existing = $('Filter').item.json.chat_history ? JSON.parse($('Filter').item.json.chat_history) : [];\nexisting.push({\n  touch: 3,\n  angle: $('Code in JavaScript').item.json.angle,\n  sent_at: new Date().toISOString(),\n  replied: false\n});\nreturn { json: { ...($json), history: JSON.stringify(existing) } };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2096,
+        16
+      ],
+      "id": "f264ec02-7100-4c89-8982-ad92729a29ca",
+      "name": "Code in JavaScript2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6c76846f-f151-4629-a765-dfa679ecb8f6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1589da9347a75def078efd279596d8a370ae556adc8d60ec3684369de84e3ba0"
+  },
+  "id": "6qciQAFo4foB5hOP",
+  "tags": []
+}
