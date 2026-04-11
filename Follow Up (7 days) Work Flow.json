@@ -126,7 +126,7 @@
         "messages": {
           "values": [
             {
-              "content": "=You are a strategy agent deciding the follow-up angle for a 3rd touch cold email.\n\nAvailable angles: cost_savings | social_proof | curiosity_hook | case_study\n\nRules:\n- If follow_up_angle = social_proof → use curiosity_hook\n- If follow_up_angle = curiosity_hook → use case_study\n- Never reuse an angle that got no reply\n\nRespond in valid JSON only, no markdown:\n{\"angle\": \"curiosity_hook\", \"reason\": \"switching from social proof after no reply\"}",
+              "content": "=You are a strategy agent deciding the follow-up angle for a 3rd touch cold email.\n\nYou have access to the full conversation history as a JSON array.\nEach entry has: touch number, angle used, sent_at, replied status.\n\nRules:\n- Never reuse an angle where replied = false\n- Pick the next unused angle from: cost_savings, social_proof, curiosity_hook, case_study\n- If history is empty, default to cost_savings\n- Never reuse the same angle\n\nRespond in valid JSON only, no markdown:\n{\"angle\": \"curiosity_hook\", \"reason\": \"switching from social proof after no reply\"}",
               "role": "model"
             },
             {
@@ -168,7 +168,7 @@
               "role": "model"
             },
             {
-              "content": "=Here is a lead's information:\nFirst Name: {{ $('Filter').item.json.first_name }}\nLast Name: {{ $('Filter').item.json.last_name }}\nCompany: {{ $('Filter').item.json.company }}\nWhat industry are they in: {{ $('Filter').item.json.industry }}\nWhat they currently do/notes: {{ $('Filter').item.json.notes }}\nPrevious outreach: {{ $('Filter').item.json.outreach }}\nAngle to use: {{ $json.angle }}\nReason: {{ $json.reason }}"
+              "content": "=Here is a lead's information:\nFirst Name: {{ $('Filter').item.json.first_name }}\nLast Name: {{ $('Filter').item.json.last_name }}\nCompany: {{ $('Filter').item.json.company }}\nWhat industry are they in: {{ $('Filter').item.json.industry }}\nWhat they currently do/notes: {{ $('Filter').item.json.notes }}\nPrevious outreach: {{ $('Filter').item.json.outreach }}\nAngle to use: {{ $json.angle }}\nReason: {{ $json.reason }}\nFull history: {{ $('Filter').item.json.chat_history }}\n"
             }
           ]
         },
@@ -717,7 +717,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "6c76846f-f151-4629-a765-dfa679ecb8f6",
+  "versionId": "53836eb9-1457-4ec0-ab8b-06e067d41b69",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "1589da9347a75def078efd279596d8a370ae556adc8d60ec3684369de84e3ba0"
