@@ -130,7 +130,7 @@
               "role": "model"
             },
             {
-              "content": "=Lead info:\n- Industry: {{ $json.industry }}\n- Role: {{ $json.role }}\n- Previous angle used: {{ $json.angle_used }}\n- Follow-up angle used: {{ $json.follow_up_angle }}\n- Reply received: {{ $json.reply_received }}"
+              "content": "=Lead info:\n- Industry: {{ $json.industry }}\n- Role: {{ $json.role }}\n- Previous angle used: {{ $json.angle_used }}\n- Follow-up angle used: {{ $json.follow_up_angle }}\n- Reply received: {{ $json.reply_received }}\n- JSON History:{{ $json.chat_history }}"
             }
           ]
         },
@@ -168,7 +168,7 @@
               "role": "model"
             },
             {
-              "content": "=Here is a lead's information:\nFirst Name: {{ $('Filter').item.json.first_name }}\nLast Name: {{ $('Filter').item.json.last_name }}\nCompany: {{ $('Filter').item.json.company }}\nWhat industry are they in: {{ $('Filter').item.json.industry }}\nWhat they currently do/notes: {{ $('Filter').item.json.notes }}\nPrevious outreach: {{ $('Filter').item.json.outreach }}\nAngle to use: {{ $json.angle }}\nReason: {{ $json.reason }}\nFull history: {{ $('Filter').item.json.chat_history }}\n"
+              "content": "=Here is a lead's information:\nFirst Name: {{ $('Filter').item.json.first_name }}\nLast Name: {{ $('Filter').item.json.last_name }}\nCompany: {{ $('Filter').item.json.company }}\nWhat industry are they in: {{ $('Filter').item.json.industry }}\nWhat they currently do/notes: {{ $('Filter').item.json.notes }}\nPrevious outreach: {{ $('Filter').item.json.outreach }}\nAngle to use: {{ $json.angle }}\nReason: {{ $json.reason }}\n"
             }
           ]
         },
@@ -717,7 +717,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "53836eb9-1457-4ec0-ab8b-06e067d41b69",
+  "versionId": "98d5a7cd-be0d-4730-934f-5589a50058fc",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "1589da9347a75def078efd279596d8a370ae556adc8d60ec3684369de84e3ba0"

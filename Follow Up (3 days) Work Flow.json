@@ -130,7 +130,7 @@
               "role": "model"
             },
             {
-              "content": "=Lead info:\n- Industry: {{ $json.industry }}\n- Role: {{ $json.role }}\n- Previous angle used: {{ $json.angle_used }}\n- Reply received: {{ $json.reply_received }}\n- Follow-up angle suggested: {{ $json.follow_up_angle }}"
+              "content": "=Lead info:\n- Industry: {{ $json.industry }}\n- Role: {{ $json.role }}\n- Previous angle used: {{ $json.angle_used }}\n- Reply received: {{ $json.reply_received }}\n- Follow-up angle suggested: {{ $json.follow_up_angle }}\n- JSON History:{{ $json.chat_history }}"
             }
           ]
         },
@@ -157,9 +157,9 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "models/gemini-3.1-flash-lite-preview",
+          "value": "models/gemini-2.5-flash-lite",
           "mode": "list",
-          "cachedResultName": "models/gemini-3.1-flash-lite-preview"
+          "cachedResultName": "models/gemini-2.5-flash-lite"
         },
         "messages": {
           "values": [
@@ -168,7 +168,7 @@
               "role": "model"
             },
             {
-              "content": "=Here is a lead's information:\nFirst Name: {{ $('Filter').item.json.first_name }}\nLast Name: {{ $('Filter').item.json.last_name }}\nCompany: {{ $('Filter').item.json.company }}\nWhat industry are they in: {{ $('Filter').item.json.industry }}\nWhat they currently do/notes: {{ $('Filter').item.json.notes }}\nPrevious outreach: {{ $('Filter').item.json.outreach }}\nAngle to use: {{ $json.angle }}\nReason: {{ $json.reason }}\nFull history: {{ $json.chat_history }}"
+              "content": "=Here is a lead's information:\nFirst Name: {{ $('Filter').item.json.first_name }}\nLast Name: {{ $('Filter').item.json.last_name }}\nCompany: {{ $('Filter').item.json.company }}\nWhat industry are they in: {{ $('Filter').item.json.industry }}\nWhat they currently do/notes: {{ $('Filter').item.json.notes }}\nPrevious outreach: {{ $('Filter').item.json.outreach }}\nAngle to use: {{ $json.angle }}\nReason: {{ $json.reason }}"
             }
           ]
         },
@@ -530,7 +530,7 @@
       "parameters": {
         "fromEmail": "oscar@binox.com.hk",
         "toEmail": "={{ $('Get row(s) in sheet').item.json.email }}",
-        "subject": "=Re: {{ $('Get row(s) in sheet').item.json.subject }}\n",
+        "subject": "=Re: {{ $('Get row(s) in sheet').item.json.subject }}",
         "emailFormat": "text",
         "text": "={{ $('Update row in sheet').item.json.follow_up_outreach }}",
         "options": {
@@ -716,7 +716,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "4041358b-0276-4c41-b2fb-d12018a7228b",
+  "versionId": "433a7229-e0ef-4270-9443-c416687d93bf",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "1589da9347a75def078efd279596d8a370ae556adc8d60ec3684369de84e3ba0"
