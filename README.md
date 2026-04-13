@@ -165,7 +165,7 @@ All state is stored in a **Google Sheet** (`Binox Leads Sheet`, sheet: `leads-10
 2. Filter to unsent leads
 3. Strategy agent selects angle → JSON parsed → Copywriter drafts email with subject
 4. Subject/body split via JS code node
-5. touch 1 entry pushed to `chat_history`
+5. Touch 1 entry pushed to `chat_history`
 6. Row updated in sheet (outreach, subject, date_sent, angle_used, chat_history)
 7. Email sent via SMTP
 
@@ -216,11 +216,42 @@ All state is stored in a **Google Sheet** (`Binox Leads Sheet`, sheet: `leads-10
 
 ### Prerequisites
 
-- n8n instance (self-hosted or cloud)
+- n8n (self-hosted) — see [n8n self-hosting docs](https://docs.n8n.io/hosting/)
 - Google Sheets OAuth2 credential configured in n8n
 - Google Gemini (PaLM) API credential configured in n8n
-- SMTP credential configured in n8n (sending from `oscar@binox.com.hk`)
+- SMTP credential configured in n8n
 - IMAP credential configured in n8n (for Response Tracker)
+
+### Self-Hosting n8n
+
+This project was built and tested on a **self-hosted n8n instance** running locally. To replicate:
+
+1. Install n8n via npm or Docker:
+   ```bash
+   # npm
+   npm install -g n8n
+   n8n start
+
+   # or Docker
+   docker run -it --rm --name n8n -p 5678:5678 n8nio/n8n
+   ```
+2. n8n will be available at `http://localhost:5678` by default.
+
+### Exposing n8n with ngrok
+
+For the **IMAP Response Tracker** and any webhook-based triggers to function properly, n8n needs to be reachable from the internet. This was achieved during development using **[ngrok](https://ngrok.com/)**, which creates a secure public tunnel to the local n8n instance.
+
+```bash
+# After starting n8n locally, run:
+ngrok http 5678
+```
+
+ngrok will output a public URL (e.g. `https://abc123.ngrok-free.app`). Set this as your n8n webhook base URL:
+
+- In n8n, go to **Settings → General**
+- Set **Webhook URL** to your ngrok URL (e.g. `https://abc123.ngrok-free.app/`)
+
+> **Note:** The free tier of ngrok assigns a new URL each time it is restarted. For persistent deployments, use a paid ngrok plan with a fixed domain, or deploy n8n to a cloud server with a stable URL.
 
 ### Google Sheet Structure
 
@@ -240,7 +271,8 @@ Create a sheet with the column headers listed in the Memory Store section above.
 
 | Component | Tool |
 |---|---|
-| Workflow orchestration | n8n |
+| Workflow orchestration | n8n (self-hosted) |
+| Local tunnel / public URL | ngrok |
 | AI models | Google Gemini (via PaLM API) |
 | Memory / data store | Google Sheets |
 | Email sending | SMTP |
