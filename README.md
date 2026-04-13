@@ -202,15 +202,6 @@ All state is stored in a **Google Sheet** (`Binox Leads Sheet`, sheet: `leads-10
 2. Look up matching row in sheet by email
 3. Set `reply_received = true` and `reply_date = now`
 
----
-
-## Credentials Warning
-
-> ⚠️ **The workflow JSON files in this repo contain internal n8n credential reference IDs** (e.g. `"id": "bBpwW5WKU1sDaQ2j"` for Google Sheets, `"id": "I2pwZMxJpr3EsJBu"` for Gemini API, SMTP account IDs). These are **n8n-internal identifiers** that reference credentials stored inside your n8n instance — they are not API keys or secrets themselves and cannot be used to access any external service directly.
->
-> However, the files also contain the **Google Sheet document ID** (`1SlLwSCv-ijWeYFuai6nlc-83lzYcunzJ5eefPcJ-WvE`) and the **n8n instance ID**. If your Google Sheet is not access-restricted, the document ID could be used to view it. It is recommended to either restrict the sheet's sharing settings to specific accounts only, or replace the document ID in the JSON before sharing publicly.
-
----
 
 ## Setup
 
