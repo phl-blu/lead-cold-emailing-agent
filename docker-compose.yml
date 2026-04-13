@@ -1,0 +1,19 @@
+services:
+  n8n:
+    image: n8nio/n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - GENERIC_TIMEZONE=Asia/Tokyo
+      - WEBHOOK_URL=http://localhost:5678/
+      - N8N_PORT=5678
+      - N8N_SECURE_COOKIE=false
+      - N8N_EDITOR_BASE_URL=https://dorcas-iliac-luci.ngrok-free.dev
+      - WEBHOOK_URL=https://dorcas-iliac-luci.ngrok-free.dev
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+
+volumes:
+  n8n_data:
