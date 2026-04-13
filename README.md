@@ -1,4 +1,4 @@
-# Binox Cold Outreach Agent
+# Binox Cold Outreach Agent (Binox Take Home Task I1: Cold Outreach Agent with Prompt Optimization)
 
 A multi-agent cold outreach system built in n8n that drafts personalized cold emails, tracks conversation history, and automatically switches messaging angles when a lead doesn't reply. Built for Binox Limited's outbound sales workflow targeting the Greater Bay Area market.
 
