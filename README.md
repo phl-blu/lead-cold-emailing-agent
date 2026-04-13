@@ -203,6 +203,7 @@ All state is stored in a **Google Sheet** (`Binox Leads Sheet`, sheet: `leads-10
 3. Set `reply_received = true` and `reply_date = now`
 
 
+---
 ## Setup
 
 ### Prerequisites
